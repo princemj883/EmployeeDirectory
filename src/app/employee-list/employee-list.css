@@ -258,3 +258,23 @@
   font-size: 14px;
   color: #64748b;
 }
+
+/* Sortable Headers */
+.sortable
+{
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.sortable:hover
+{
+  background-color: #f1f5f9;
+}
+
+.sort-indicator
+{
+  margin-left: 6px;
+  font-size: 12px;
+  color: #3b82f6;
+}

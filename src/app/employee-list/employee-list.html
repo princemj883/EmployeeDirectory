@@ -16,7 +16,7 @@
      <!-- ToolBar Ends-->
       <!-- Result Counts Starts -->
        <div class ="results-count">
-        Showing {{employees().length}} of {{allEmployees().length}} employees
+        Showing {{employees().length}} of {{totalCount()}} employees
        </div>
       <!-- Result Counts Ends -->
     <!--  Loading Starts -->
@@ -36,14 +36,134 @@
             <!--Table Head Starts-->
             <thead>
                 <tr>
-                    <th>Employee</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Designation</th>
-                    <th>Location</th>
-                    <th>Status</th>
-                    <th>Salary</th>
-                    <th>Join Date</th>
+                    <th class = "sortable" (click)="onSort('firstName')">
+                        Employee
+                        @if(sortColumn === 'firstName')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('email')">
+                        Email
+                        @if(sortColumn === 'email')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('department')">
+                        Department
+                        @if(sortColumn === 'department')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('designation')">
+                        Designation
+                        @if(sortColumn === 'designation')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('location')">
+                        Location
+                        @if(sortColumn === 'location')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('status')">
+                        Status
+                        @if(sortColumn === 'status')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('salary')">
+                        Salary
+                        @if(sortColumn === 'salary')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
+                    <th class = "sortable" (click)="onSort('joinDate')">
+                        Join Date
+                        @if(sortColumn === 'joinDate')
+                        {
+                            <span class="sort-indicator">
+                                @if(sortDirection === 'asc')
+                                {
+                                    &#129093; <!-- Up Arrow -->
+                                }
+                                @else
+                                {
+                                    &#129095; <!-- Down Arrow -->
+                                }
+                            </span>
+                        }
+                    </th>
                     <th>Actions</th>
                 </tr>
             </thead>

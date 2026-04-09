@@ -17,10 +17,10 @@ export class EmployeeList implements OnInit
   private employeeService: EmployeeService = inject(EmployeeService);
   private searchSubject: Subject<string> = new Subject<string>();
 
-  allEmployees = signal<Employee[]>([]);
   employees = signal<Employee[]>([]); 
   isLoading = signal<boolean>(true);
-  searchTerm = signal<string>('');
+  totalCount = signal<number>(0);
+
 
   ngOnInit(): void
   {
@@ -29,15 +29,16 @@ export class EmployeeList implements OnInit
       debounceTime(300),
       distinctUntilChanged())
       .subscribe((term) => {
-        this.searchTerm.set(term);
-        this.filterEmployees();
+        this.employeeService.setSearchTerm(term);
+        this.refreshEmployees();
       }); 
     this.isLoading.set(true);
     this.employeeService.getEmployees()
     .subscribe({
       next: (data: Employee[]) => {
-        this.employees.set(data);
-        this.allEmployees.set(data);
+        this.employeeService.setEmployees(data);
+        this.refreshEmployees();
+        this.totalCount.set(data.length);
         this.isLoading.set(false);
       },
       error: (error) => {
@@ -46,25 +47,30 @@ export class EmployeeList implements OnInit
       }
     })
   }
+
+  private refreshEmployees(): void
+    {
+      this.employees.set(this.employeeService.getFilteredAndSortedEmployees());
+    }
+
+  get sortColumn(): string
+  {
+    return this.employeeService.getSortColumn();
+  }
+
+  get sortDirection(): 'asc' | 'desc'
+  {
+    return this.employeeService.getSortDirection();
+  }
+
   onSearch(term: string): void
   {
     this.searchSubject.next(term);
   }
 
-  filterEmployees(): void
+  onSort(column: string): void
   {
-    if(!this.searchTerm().trim())
-    {
-      this.employees.set(this.allEmployees());
-      return;
-    }
-    const term = this.searchTerm().toLowerCase().trim();
-    this.employees.set(this.allEmployees().filter((employee: Employee) =>
-    {
-      return (employee.firstName.toLowerCase().includes(term) ||
-              employee.lastName.toLowerCase().includes(term) ||
-              employee.email.toLowerCase().includes(term) ||
-              employee.department.toLowerCase().includes(term));
-    }));
+    this.employeeService.setSort(column);
+    this.refreshEmployees();
   }
 }
