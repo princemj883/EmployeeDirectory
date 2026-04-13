@@ -5,20 +5,52 @@
         <p>Manager and view all employees in your organization</p>
     </div>
     <!-- Header Ends-->
-     <!-- ToolBar Starts-->
-      <div class ="toolbar">
-        <div class ="search-box">
-            <input type = "text" placeholder="Search by name, email, or department..."
-            (input)="onSearch($any($event.target).value)"/>
+    <!-- ToolBar Starts-->
+    <div class="toolbar">
+        <div class="search-box">
+            <input type="text" placeholder="Search by name, email, or department..."
+                (input)="onSearch($any($event.target).value)" />
 
         </div>
-      </div>
-     <!-- ToolBar Ends-->
-      <!-- Result Counts Starts -->
-       <div class ="results-count">
+        <!-- Filter Dropdowns Start-->
+        <div class="filters">
+            <!--Department Filter Starts-->
+            <select (change)="onDepartmentFilter($any($event.target).value)">
+                <option value="">All Departments</option>
+                @for(department of departments; track $index)
+                {
+                <option [value]="department">{{department}}</option>
+                }
+            </select>
+            <!--Department Filter Ends-->
+            <!--Status Filter Starts-->
+            <select (change)="onStatusFilter($any($event.target).value)">
+                <option value="">All Statuses</option>
+                @for(status of statuses; track $index)
+                {
+                <option [value]="status">{{status}}</option>
+                }
+            </select>
+            <!--Status Filter Ends-->
+            <!--Location Filter Starts-->
+            <select (change)="onLocationFilter($any($event.target).value)">
+                <option value="">All Locations</option>
+                @for(location of locations; track $index)
+                {
+                <option [value]="location">{{location}}</option>
+                }
+            </select>
+            <!--Location Filter Ends-->
+
+        </div>
+        <!-- Filter Dropdowns End-->
+    </div>
+    <!-- ToolBar Ends-->
+    <!-- Result Counts Starts -->
+    <div class="results-count">
         Showing {{employees().length}} of {{totalCount()}} employees
-       </div>
-      <!-- Result Counts Ends -->
+    </div>
+    <!-- Result Counts Ends -->
     <!--  Loading Starts -->
     @if(isLoading())
     {
@@ -36,132 +68,132 @@
             <!--Table Head Starts-->
             <thead>
                 <tr>
-                    <th class = "sortable" (click)="onSort('firstName')">
+                    <th class="sortable" (click)="onSort('firstName')">
                         Employee
                         @if(sortColumn === 'firstName')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('email')">
+                    <th class="sortable" (click)="onSort('email')">
                         Email
                         @if(sortColumn === 'email')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('department')">
+                    <th class="sortable" (click)="onSort('department')">
                         Department
                         @if(sortColumn === 'department')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('designation')">
+                    <th class="sortable" (click)="onSort('designation')">
                         Designation
                         @if(sortColumn === 'designation')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('location')">
+                    <th class="sortable" (click)="onSort('location')">
                         Location
                         @if(sortColumn === 'location')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('status')">
+                    <th class="sortable" (click)="onSort('status')">
                         Status
                         @if(sortColumn === 'status')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('salary')">
+                    <th class="sortable" (click)="onSort('salary')">
                         Salary
                         @if(sortColumn === 'salary')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
-                    <th class = "sortable" (click)="onSort('joinDate')">
+                    <th class="sortable" (click)="onSort('joinDate')">
                         Join Date
                         @if(sortColumn === 'joinDate')
                         {
-                            <span class="sort-indicator">
-                                @if(sortDirection === 'asc')
-                                {
-                                    &#129093; <!-- Up Arrow -->
-                                }
-                                @else
-                                {
-                                    &#129095; <!-- Down Arrow -->
-                                }
-                            </span>
+                        <span class="sort-indicator">
+                            @if(sortDirection === 'asc')
+                            {
+                            &#129093; <!-- Up Arrow -->
+                            }
+                            @else
+                            {
+                            &#129095; <!-- Down Arrow -->
+                            }
+                        </span>
                         }
                     </th>
                     <th>Actions</th>

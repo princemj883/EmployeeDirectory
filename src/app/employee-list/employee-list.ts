@@ -21,6 +21,11 @@ export class EmployeeList implements OnInit
   isLoading = signal<boolean>(true);
   totalCount = signal<number>(0);
 
+  //Dropdown Options
+  departments: string[] =[];
+  locations: string[] =[];
+  statuses: string[] =[];
+
 
   ngOnInit(): void
   {
@@ -37,6 +42,12 @@ export class EmployeeList implements OnInit
     .subscribe({
       next: (data: Employee[]) => {
         this.employeeService.setEmployees(data);
+
+        //Populate dropdowns options
+        this.departments = this.employeeService.getDepartments();
+        this.locations = this.employeeService.getLocations();
+        this.statuses = this.employeeService.getStatuses();
+
         this.refreshEmployees();
         this.totalCount.set(data.length);
         this.isLoading.set(false);
@@ -71,6 +82,24 @@ export class EmployeeList implements OnInit
   onSort(column: string): void
   {
     this.employeeService.setSort(column);
+    this.refreshEmployees();
+  }
+
+  //Dropdown Handlers
+
+  onDepartmentFilter(department: string): void
+  {
+    this.employeeService.setDepartmentFilter(department);
+    this.refreshEmployees();
+  }
+  onLocationFilter(location: string): void
+  {
+    this.employeeService.setLocationFilter(location);
+    this.refreshEmployees();
+  }
+  onStatusFilter(status: string): void
+  {
+    this.employeeService.setStatusFilter(status);
     this.refreshEmployees();
   }
 }

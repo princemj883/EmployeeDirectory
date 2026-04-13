@@ -18,23 +18,24 @@ export class EmployeeService {
   private sortColumn = signal<string>('');
   private sortDirection = signal<'asc' | 'desc'>('asc');
 
+  //filter properties
+  private filterDepartment: string = '';
+  private filterStatus: string = '';
+  private filterLocation: string = '';
 
   getEmployees(): Observable<Employee[]> {
     return this.http.get<Employee[]>(this.apiUrl);
   }
 
-  setEmployees(employees: Employee[]): void 
-  {
+  setEmployees(employees: Employee[]): void {
     this.allEmployees.set(employees);
   }
 
-  getSortColumn(): string 
-  {
+  getSortColumn(): string {
     return this.sortColumn();
   }
 
-  getSortDirection(): 'asc' | 'desc' 
-  {
+  getSortDirection(): 'asc' | 'desc' {
     return this.sortDirection();
   }
 
@@ -51,8 +52,20 @@ export class EmployeeService {
         employee.department.toLowerCase().includes(term) ||
         employee.location.toLowerCase().includes(term));
     });
-    //Apply sort
 
+    //Apply Department filter
+    if (this.filterDepartment) {
+      result = result.filter(emp => emp.department === this.filterDepartment);
+    }
+    //Apply Status filter
+    if (this.filterStatus) {
+      result = result.filter(emp => emp.status === this.filterStatus);
+    }
+    //Apply Location filter
+    if (this.filterLocation) {
+      result = result.filter(emp => emp.location === this.filterLocation);
+    }
+    //Apply sort
     result = this.applySort(result);
     return result;
   }
@@ -94,5 +107,35 @@ export class EmployeeService {
         return this.sortDirection() === 'desc' ? comparison * -1 : comparison;
       });
     }
+  }
+
+  //Get uniqies values from dropdown;
+  getDepartments(): string[] {
+    const departments: string[] = this.allEmployees().map(emp => emp.department);
+    return [...new Set(departments)].sort();
+  }
+
+  getStatuses(): string[] {
+    const statuses: string[] = this.allEmployees().map(emp => emp.status);
+    return [...new Set(statuses)].sort();
+  }
+
+  getLocations(): string[] {
+    const locations: string[] = this.allEmployees().map(emp => emp.location);
+    return [...new Set(locations)].sort();
+  }
+
+  //Filter setters
+
+  setDepartmentFilter(department: string): void {
+    this.filterDepartment = department;
+  }
+
+  setStatusFilter(status: string): void {
+    this.filterStatus = status;
+  }
+
+  setLocationFilter(location: string): void {
+    this.filterLocation = location;
   }
 }
