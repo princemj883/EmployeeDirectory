@@ -76,7 +76,8 @@ export class EmployeeService {
     return result;
   }
 
-  getFilteredAndSortedEmployees(): Employee[] {
+  getFilteredAndSortedEmployees(): Employee[] 
+  {
     const result = this.getFilteredAndSortedEmployeesWithoutPagination();
 
     //Store filtered count before pagination
@@ -203,7 +204,7 @@ export class EmployeeService {
     }
   }
 
-  deleteEmployee(id: number): void {
+  deleteEmployee(id: number): Observable<unknown> {
     this.allEmployees.set(this.allEmployees().filter(emp => emp.id !== id));
 
     // Recalculate filtered count without pagination
@@ -215,21 +216,23 @@ export class EmployeeService {
     if (this.currentPage > newTotalPages && newTotalPages > 0) {
       this.currentPage = newTotalPages;
     }
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   //Update Employee
-  updateEmployee(id: number, updateData: Partial<Employee>): void {
+  updateEmployee(id: number, updateData: Partial<Employee>): Observable<Employee> {
     const index = this.allEmployees().findIndex(emp => emp.id === id);
     if (index === -1)
-      return;
+      return new Observable<Employee>;
     
     const updatedEmployees = [...this.allEmployees()];
     updatedEmployees[index] = { ...updatedEmployees[index], ...updateData };
     this.allEmployees.set(updatedEmployees);
+    return this.http.put<Employee>(`${this.apiUrl}/${id}`, updateData);
   }
 
   //Add Employee
-  addEmployee(data: Partial<Employee>): void 
+  addEmployee(data: Partial<Employee>): Observable<Employee> 
   {
     const newId = this.allEmployees().reduce((max, emp) => emp.id >max? emp.id : max, 0)+1;
     const newEmployee: Employee = {
@@ -248,5 +251,41 @@ export class EmployeeService {
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + newId
     };
     this.allEmployees.set([...this.allEmployees(), newEmployee]);
+
+    return this.http.post<Employee>(this.apiUrl, newEmployee);
+  }
+
+  //Export to CSV
+  getEmployeesForExport(): Employee[] 
+  {
+    let result = [...this.allEmployees()];
+
+    //Apply search filter
+    const term = this.searchTerm().toLowerCase();
+
+    result = result.filter((employee: Employee) => {
+      return (employee.firstName.toLowerCase().includes(term) ||
+        employee.lastName.toLowerCase().includes(term) ||
+        employee.email.toLowerCase().includes(term) ||
+        employee.department.toLowerCase().includes(term) ||
+        employee.location.toLowerCase().includes(term));
+    });
+
+    //Apply Department filter
+    if (this.filterDepartment) {
+      result = result.filter(emp => emp.department === this.filterDepartment);
+    }
+    //Apply Status filter
+    if (this.filterStatus) {
+      result = result.filter(emp => emp.status === this.filterStatus);
+    }
+    //Apply Location filter
+    if (this.filterLocation) {
+      result = result.filter(emp => emp.location === this.filterLocation);
+    }
+    //Apply sort
+    result = this.applySort(result);
+
+    return result;
   }
 }

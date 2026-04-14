@@ -165,7 +165,15 @@ export class EmployeeList implements OnInit {
   onDeleteEmployee(employee: Employee): void {
     const confirmed: boolean = confirm(`Are you sure you want to delete ${employee.firstName} ${employee.lastName}?`);
     if (confirmed) {
-      this.employeeService.deleteEmployee(employee.id);
+      this.employeeService.deleteEmployee(employee.id).subscribe(
+      {
+        next: () => {
+          this.refreshEmployees();
+        },
+        error: (error) => {
+          console.error('Error deleting employee:', error);
+        }
+      });
       this.refreshEmployees();
     }
   }
@@ -186,10 +194,19 @@ export class EmployeeList implements OnInit {
     {
       return;
     }
-    this.employeeService.updateEmployee(this.editingEmployeeId, this.editFormData);
-    this.editingEmployeeId = null;
-    this.editFormData ={};
-    this.refreshEmployees();
+    this.employeeService.updateEmployee(this.editingEmployeeId, this.editFormData).subscribe(
+      {
+        next: () =>{
+          this.editingEmployeeId = null;
+          this.editFormData ={};
+          this.refreshEmployees();
+        },
+        error: (error) => {
+          console.error('Error updating employee:', error);
+        }
+      }
+    );
+    
 
   }
 
@@ -213,10 +230,67 @@ export class EmployeeList implements OnInit {
       alert('Please fill in all required fields (First Name, Last Name, Email)');
       return;
     }
-    this.employeeService.addEmployee(this.newEmployeeData);
-    this.showAddForm = false;
-    this.newEmployeeData = {};
-    this.refreshEmployees();
-
+    this.employeeService.addEmployee(this.newEmployeeData).subscribe(
+      {
+        next: () => {
+          this.showAddForm = false;
+          this.newEmployeeData = {};
+          this.refreshEmployees();
+        },
+        error: (error) => {
+          console.error('Error adding employee:', error);
+        }
+      }
+    );
   }
-}
+
+  //Export to CSV
+  onExportToCSV(): void {
+    const employees = this.employeeService.getEmployeesForExport();
+    if(employees.length === 0)
+    {
+      alert('No employees to export'); return;
+    }
+
+    //CSV
+    //Define Headers
+    const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Department', 'Designation', 'Location', 'Salary', 'Join Date', 'Status'];
+
+    //Helper function to escape CSV values
+    const escapeCsvValue = (value: any): string => { 
+      const stringValue = String(value ?? '');
+      //Warp in quotes and escape exiting quotes
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    //Convert employee data to CSV row
+    const rows = employees.map(emp => {
+      return [
+        escapeCsvValue(
+        emp.id),
+        escapeCsvValue(emp.firstName),
+        escapeCsvValue(emp.lastName),
+        escapeCsvValue(emp.email),
+        escapeCsvValue(emp.phone),
+        escapeCsvValue(emp.department),
+        escapeCsvValue(emp.designation),
+        escapeCsvValue(emp.location),
+        escapeCsvValue(emp.salary),
+        escapeCsvValue(emp.joinDate),
+        escapeCsvValue(emp.status)
+      ].join(','); //Join fields with comma
+    });
+    //Unexcepted CSV: value1, value2,value3
+
+    //Combine headers and rows
+    const csvContent = headers.join(',') + '\n' + rows.join('\n');
+
+    //create blob and trigger download
+    const blog = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blog);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'employees.csv';
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+} 
